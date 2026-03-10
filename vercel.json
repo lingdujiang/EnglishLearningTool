@@ -2,10 +2,21 @@
   "name": "english-learning-zoo",
   "outputDirectory": "code",
   "public": true,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/code/$1"
+      "source": "/(.*)",
+      "destination": "/code/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
     }
   ]
 }
