@@ -1,0 +1,11 @@
+{
+  "name": "english-learning-zoo",
+  "outputDirectory": "code",
+  "public": true,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/code/$1"
+    }
+  ]
+}

@@ -31,6 +31,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # 上传 code 目录的所有文件
           path: './code'
 
       - name: Deploy to GitHub Pages
