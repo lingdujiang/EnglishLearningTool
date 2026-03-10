@@ -1,0 +1,45 @@
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.bak
+
+# 备份文件（项目内已有 backup 目录）
+backup/
+*.zip
+*.rar
+
+# 调试工具（可选，如果不想上传）
+# tools/debug/
+
+# 大文件
+*.psd
+*.ai
+
+# 节点模块
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# 音频文件（如果太大可以考虑不上传）
+# audio/*.wav
+# audio/*.mp3
+
+# 图片文件（如果太大可以考虑不上传）
+# images/*.png
+# images/*.jpg

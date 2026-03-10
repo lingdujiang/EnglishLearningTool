@@ -1,0 +1,329 @@
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 头部 - 动物显示 */
+.header {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  padding: 20px;
+  text-align: center;
+}
+
+.animal-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.animal-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease;
+}
+
+.animal-image:hover {
+  transform: scale(1.1);
+}
+
+.animal-info {
+  display: flex;
+  gap: 20px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 主内容区 */
+#main-content {
+  padding: 30px 20px;
+  min-height: 400px;
+}
+
+.page {
+  animation: fadeIn 0.3s ease;
+}
+
+.page.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 单词卡片 */
+.word-card {
+  text-align: center;
+  padding: 20px;
+}
+
+.word-image-container {
+  margin-bottom: 20px;
+}
+
+.word-image {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 15px;
+  background: #f8f9fa;
+  padding: 10px;
+}
+
+.word-text {
+  font-size: 48px;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.word-meaning {
+  font-size: 24px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.word-sentence {
+  font-size: 16px;
+  color: #888;
+  font-style: italic;
+  margin-bottom: 25px;
+  padding: 0 20px;
+}
+
+/* 按钮组 */
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 50px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+.btn-large {
+  padding: 15px 40px;
+  font-size: 20px;
+  width: 100%;
+}
+
+/* 导航按钮组 */
+.nav-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.nav-buttons .btn {
+  flex: 1;
+  max-width: 150px;
+}
+
+/* 进度指示器 */
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: scale(1.2);
+}
+
+.dot.completed {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+#progress-text {
+  font-weight: bold;
+  color: #666;
+}
+
+/* 完成页面 */
+.celebration-card,
+.completed-card {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.celebration-title,
+.completed-title {
+  font-size: 36px;
+  margin-bottom: 30px;
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.level-up-animation {
+  margin-bottom: 30px;
+}
+
+.level-up-text {
+  font-size: 24px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.level-up-arrow {
+  font-size: 48px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.completed-text {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* 已完成页面按钮组 */
+.completed-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.completed-buttons .btn {
+  min-width: 140px;
+}
+
+/* 底部 */
+.footer {
+  background: #f8f9fa;
+  padding: 15px;
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .word-text {
+    font-size: 36px;
+  }
+  
+  .word-meaning {
+    font-size: 20px;
+  }
+  
+  .word-image {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .animal-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+/* 录音状态 */
+.btn-recording {
+  animation: recording 1s infinite;
+  background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+}
+
+@keyframes recording {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

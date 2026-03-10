@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创建项目图片 - 离线版</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 30px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { color: #667eea; margin-bottom: 10px; font-size: 32px; }
+    h2 { color: #333; margin-bottom: 20px; font-size: 24px; }
+    .subtitle { color: #666; margin-bottom: 25px; }
+    
+    .btn-group { margin: 20px 0; }
+    .btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 10px 10px 10px 0;
+      color: white;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .btn-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .btn-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    
+    .preview-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .preview-item {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+    .preview-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .preview-item canvas {
+      max-width: 100%;
+      height: auto;
+    }
+    .preview-item p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .animal-showcase {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 30px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .animal-item {
+      text-align: center;
+      color: white;
+    }
+    .animal-item canvas {
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+    .animal-item p {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .arrow {
+      font-size: 36px;
+      opacity: 0.8;
+    }
+    
+    #log {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .log-item {
+      margin: 5px 0;
+      padding: 5px 10px;
+      border-left: 3px solid #667eea;
+    }
+    .log-success { border-left-color: #28a745; color: #28a745; }
+    .log-error { border-left-color: #dc3545; color: #dc3545; }
+    .log-info { border-left-color: #4facfe; }
+    
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e0e0e0;
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #11998e, #38ef7d);
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .hidden-canvas { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🎨 创建项目图片素材</h1>
+      <p class="subtitle">完全离线生成，无需下载外部资源！所有图片在浏览器中直接生成。</p>
+      
+      <div class="btn-group">
+        <button class="btn btn-success" onclick="downloadAll()">📥 一键下载所有图片</button>
+        <button class="btn btn-primary" onclick="downloadAnimals()">🐣 下载动物等级图 (5 张)</button>
+        <button class="btn btn-info" onclick="downloadWords()">📖 下载单词图片 (50 张)</button>
+        <button class="btn btn-warning" onclick="downloadCategory('animals')">🦁 动物类 (10 张)</button>
+        <button class="btn btn-warning" onclick="downloadCategory('colors')">🎨 颜色类 (10 张)</button>
+      </div>
+      
+      <div class="progress-bar" id="progress-bar" style="display:none;">
+        <div class="progress-fill" id="progress-fill" style="width: 0%;">0%</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>🐣 动物等级成长图</h2>
+      <div class="animal-showcase" id="animal-showcase"></div>
+    </div>
+    
+    <div class="card">
+      <h2>📖 单词图片预览</h2>
+      <div class="preview-section" id="word-preview"></div>
+    </div>
+    
+    <div class="card">
+      <h2>📋 生成日志</h2>
+      <div id="log">准备就绪，点击按钮开始生成...</div>
+    </div>
+  </div>
+  
+  <!-- 隐藏的 Canvas 用于生成图片 -->
+  <canvas id="canvas" class="hidden-canvas" width="400" height="400"></canvas>
+  
+  <script>
+    const logDiv = document.getElementById('log');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    function log(msg, type = 'info') {
+      const className = type === 'success' ? 'log-success' : type === 'error' ? 'log-error' : 'log-info';
+      logDiv.innerHTML += `<div class="log-item ${className}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(msg);
+    }
+    
+    function updateProgress(current, total) {
+      const percent = Math.round((current / total) * 100);
+      document.getElementById('progress-fill').style.width = percent + '%';
+      document.getElementById('progress-fill').textContent = percent + '%';
+    }
+    
+    // ========== 动物等级图绘制 ==========
+    
+    function drawAnimal(type) {
+      ctx.clearRect(0, 0, 400, 400);
+      
+      switch(type) {
+        case 'egg':
+          // 蛋
+          ctx.fillStyle = '#FFE4B5';
+          ctx.beginPath();
+          ctx.ellipse(200, 220, 120, 160, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#DEB887';
+          ctx.lineWidth = 8;
+          ctx.stroke();
+          // 高光
+          ctx.fillStyle = 'rgba(255,255,255,0.6)';
+          ctx.beginPath();
+          ctx.ellipse(160, 180, 30, 50, -0.3, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+          
+        case 'chick':
+          // 小鸡
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(200, 200, 140, 0, Math.PI * 2);
+          ctx.fill();
+          // 身体浅色
+          ctx.fillStyle = '#FFEC8B';
+          ctx.beginPath();
+          ctx.arc(200, 200, 120, 0, Math.PI * 2);
+          ctx.fill();
+          // 眼睛
+          ctx.fillStyle = '#333';
+          ctx.beginPath();
+          ctx.arc(150, 170, 25, 0, Math.PI * 2);
+          ctx.arc(250, 170, 25, 0, Math.PI * 2);
+          ctx.fill();
+          // 眼白
+          ctx.fillStyle = '#FFF';
+          ctx.beginPath();
+          ctx.arc(158, 165, 10, 0, Math.PI * 2);
+          ctx.arc(258, 165, 10, 0, Math.PI * 2);
+          ctx.fill();
+          // 嘴巴
+          ctx.fillStyle = '#FF6B6B';
+          ctx.beginPath();
+          ctx.moveTo(180, 210);
+          ctx.lineTo(220, 210);
+          ctx.lineTo(200, 240);
+          ctx.fill();
+          // 翅膀
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.ellipse(60, 200, 40, 25, 0.3, 0, Math.PI * 2);
+          ctx.ellipse(340, 200, 40, 25, -0.3, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+          
+        case 'bird':
+          // 小鸟
+          ctx.fillStyle = '#87CEEB';
+          ctx.beginPath();
+          ctx.ellipse(200, 200, 140, 120, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // 身体浅色
+          ctx.fillStyle = '#B0E0E6';
+          ctx.beginPath();
+          ctx.ellipse(200, 200, 120, 100, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // 眼睛
+          ctx.fillStyle = '#333';
+          ctx.beginPath();
+          ctx.arc(150, 170, 28, 0, Math.PI * 2);
+          ctx.arc(250, 170, 28, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#FFF';
+          ctx.beginPath();
+          ctx.arc(160, 165, 12, 0, Math.PI * 2);
+          ctx.arc(260, 165, 12, 0, Math.PI * 2);
+          ctx.fill();
+          // 嘴巴
+          ctx.fillStyle = '#FFA500';
+          ctx.beginPath();
+          ctx.moveTo(180, 200);
+          ctx.lineTo(220, 200);
+          ctx.lineTo(200, 240);
+          ctx.fill();
+          // 翅膀
+          ctx.fillStyle = '#87CEEB';
+          ctx.beginPath();
+          ctx.ellipse(50, 200, 50, 35, 0.5, 0, Math.PI * 2);
+          ctx.ellipse(350, 200, 50, 35, -0.5, 0, Math.PI * 2);
+          ctx.fill();
+          // 羽毛
+          ctx.fillStyle = '#87CEEB';
+          ctx.beginPath();
+          ctx.arc(200, 80, 35, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+          
+        case 'bigbird':
+          // 大鸟
+          ctx.fillStyle = '#9370DB';
+          ctx.beginPath();
+          ctx.ellipse(200, 200, 160, 140, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // 身体浅色
+          ctx.fillStyle = '#BA55D3';
+          ctx.beginPath();
+          ctx.ellipse(200, 200, 140, 120, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // 眼睛
+          ctx.fillStyle = '#333';
+          ctx.beginPath();
+          ctx.arc(150, 170, 30, 0, Math.PI * 2);
+          ctx.arc(250, 170, 30, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#FFF';
+          ctx.beginPath();
+          ctx.arc(160, 165, 12, 0, Math.PI * 2);
+          ctx.arc(260, 165, 12, 0, Math.PI * 2);
+          ctx.fill();
+          // 嘴巴
+          ctx.fillStyle = '#FFA500';
+          ctx.beginPath();
+          ctx.moveTo(175, 200);
+          ctx.lineTo(225, 200);
+          ctx.lineTo(200, 250);
+          ctx.fill();
+          // 翅膀
+          ctx.fillStyle = '#9370DB';
+          ctx.beginPath();
+          ctx.ellipse(40, 200, 60, 40, 0.5, 0, Math.PI * 2);
+          ctx.ellipse(360, 200, 60, 40, -0.5, 0, Math.PI * 2);
+          ctx.fill();
+          // 头冠
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(200, 60, 30, 0, Math.PI * 2);
+          ctx.fill();
+          // 微笑
+          ctx.strokeStyle = '#FF69B4';
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.arc(200, 250, 50, 0.1 * Math.PI, 0.9 * Math.PI);
+          ctx.stroke();
+          break;
+          
+        case 'phoenix':
+          // 凤凰
+          ctx.fillStyle = '#FF4500';
+          ctx.beginPath();
+          ctx.ellipse(200, 200, 170, 150, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // 身体浅色
+          ctx.fillStyle = '#FF6347';
+          ctx.beginPath();
+          ctx.ellipse(200, 200, 150, 130, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // 眼睛
+          ctx.fillStyle = '#333';
+          ctx.beginPath();
+          ctx.arc(150, 170, 32, 0, Math.PI * 2);
+          ctx.arc(250, 170, 32, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#FFF';
+          ctx.beginPath();
+          ctx.arc(160, 165, 14, 0, Math.PI * 2);
+          ctx.arc(260, 165, 14, 0, Math.PI * 2);
+          ctx.fill();
+          // 嘴巴
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.moveTo(170, 200);
+          ctx.lineTo(230, 200);
+          ctx.lineTo(200, 260);
+          ctx.fill();
+          // 翅膀
+          ctx.fillStyle = '#FF4500';
+          ctx.beginPath();
+          ctx.ellipse(30, 200, 70, 45, 0.5, 0, Math.PI * 2);
+          ctx.ellipse(370, 200, 70, 45, -0.5, 0, Math.PI * 2);
+          ctx.fill();
+          // 头冠火焰
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(200, 50, 35, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(170, 70, 25, 0, Math.PI * 2);
+          ctx.arc(230, 70, 25, 0, Math.PI * 2);
+          ctx.fill();
+          // 尾巴火焰
+          ctx.fillStyle = '#FF6347';
+          ctx.beginPath();
+          ctx.ellipse(200, 360, 80, 30, 0, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+      }
+      
+      return canvas.toDataURL('image/png');
+    }
+    
+    // ========== 单词图片绘制 ==========
+    
+    function drawWordImage(word, category) {
+      ctx.clearRect(0, 0, 400, 400);
+      
+      // 颜色映射
+      const colors = {
+        animals: ['#FFB6C1', '#87CEEB', '#98FB98', '#FFD700', '#DDA0DD', '#FFC0CB', '#FFA500', '#000000', '#8B4513', '#F5F5F5'],
+        colors: ['#FF0000', '#0000FF', '#008000', '#FFFF00', '#FFA500', '#800080', '#FFC0CB', '#000000', '#FFFFFF', '#A52A2A'],
+        numbers: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98FB98', '#F0E68C', '#E6E6FA', '#FFDAB9'],
+        family: ['#FFB6C1', '#4682B4', '#DDA0DD', '#708090', '#FF69B4', '#1E90FF', '#FFDAB9', '#9370DB', '#2F4F4F', '#DB7093'],
+        objects: ['#FF4500', '#8B4513', '#FFD700', '#4169E1', '#F5F5DC', '#8B4513', '#A0522D', '#4682B4', '#8B4513', '#87CEEB']
+      };
+      
+      const categoryColors = colors[category] || ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'];
+      const colorIndex = words[category].indexOf(word);
+      const bgColor = categoryColors[colorIndex % categoryColors.length];
+      
+      // 背景圆角矩形
+      ctx.fillStyle = bgColor + '20';
+      roundRect(ctx, 20, 20, 360, 360, 40);
+      ctx.fill();
+      
+      // 中间圆形
+      ctx.fillStyle = bgColor;
+      ctx.beginPath();
+      ctx.arc(200, 150, 100, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // 首字母
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 120px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(word.charAt(0).toUpperCase(), 200, 150);
+      
+      // 单词
+      ctx.fillStyle = '#333333';
+      ctx.font = 'bold 40px Arial';
+      ctx.fillText(word, 200, 320);
+      
+      return canvas.toDataURL('image/png');
+    }
+    
+    function roundRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+    
+    // ========== 下载功能 ==========
+    
+    function downloadCanvas(filename) {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+    
+    function downloadAnimals() {
+      log('开始下载动物等级图...');
+      const animals = ['egg', 'chick', 'bird', 'bigbird', 'phoenix'];
+      
+      animals.forEach((animal, index) => {
+        setTimeout(() => {
+          drawAnimal(animal);
+          downloadCanvas(`${animal}.png`);
+          log(`✅ 下载：${animal}.png`, 'success');
+          if (index === animals.length - 1) {
+            log('✅ 动物等级图下载完成！', 'success');
+          }
+        }, index * 300);
+      });
+    }
+    
+    const words = {
+      animals: ['cat', 'dog', 'bird', 'fish', 'rabbit', 'duck', 'pig', 'cow', 'horse', 'sheep'],
+      colors: ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'black', 'white', 'brown'],
+      numbers: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
+      family: ['mom', 'dad', 'grandma', 'grandpa', 'sister', 'brother', 'baby', 'family', 'uncle', 'aunt'],
+      objects: ['ball', 'book', 'pencil', 'bag', 'cup', 'chair', 'table', 'bed', 'door', 'window']
+    };
+    
+    function downloadWords() {
+      log('开始下载单词图片...');
+      let count = 0;
+      const total = 50;
+      
+      document.getElementById('progress-bar').style.display = 'block';
+      
+      Object.keys(words).forEach(category => {
+        words[category].forEach((word, index) => {
+          setTimeout(() => {
+            drawWordImage(word, category);
+            downloadCanvas(`${word}.png`);
+            count++;
+            updateProgress(count, total);
+            log(`✅ 下载：${word}.png`, 'success');
+            
+            if (count === total) {
+              log('✅ 单词图片下载完成！共 50 张', 'success');
+              document.getElementById('progress-bar').style.display = 'none';
+            }
+          }, count * 150);
+        });
+      });
+    }
+    
+    function downloadCategory(category) {
+      log(`开始下载${category}类图片...`);
+      let count = 0;
+      
+      words[category].forEach((word, index) => {
+        setTimeout(() => {
+          drawWordImage(word, category);
+          downloadCanvas(`${word}.png`);
+          log(`✅ 下载：${word}.png`, 'success');
+          if (index === words[category].length - 1) {
+            log(`✅ ${category}类下载完成！`, 'success');
+          }
+        }, index * 300);
+      });
+    }
+    
+    function downloadAll() {
+      log('开始下载所有图片...');
+      downloadAnimals();
+      setTimeout(() => downloadWords(), 2000);
+    }
+    
+    // ========== 预览渲染 ==========
+    
+    function renderAnimalShowcase() {
+      const container = document.getElementById('animal-showcase');
+      const animals = ['egg', 'chick', 'bird', 'bigbird', 'phoenix'];
+      const labels = ['蛋', '雏鸟', '小鸟', '大鸟', '凤凰'];
+      
+      container.innerHTML = animals.map((animal, i) => `
+        <div class="animal-item">
+          <canvas width="150" height="150" id="animal-${animal}"></canvas>
+          <p>${labels[i]}</p>
+        </div>
+        ${i < animals.length - 1 ? '<div class="arrow">→</div>' : ''}
+      `).join('');
+      
+      // 绘制
+      setTimeout(() => {
+        animals.forEach(animal => {
+          const animalCanvas = document.getElementById(`animal-${animal}`);
+          const animalCtx = animalCanvas.getContext('2d');
+          drawAnimal(animal);
+          const img = new Image();
+          img.onload = () => {
+            animalCtx.drawImage(img, 0, 0, 150, 150);
+          };
+          img.src = canvas.toDataURL('image/png');
+        });
+      }, 100);
+    }
+    
+    function renderWordPreview() {
+      const container = document.getElementById('word-preview');
+      let previewWords = [];
+      
+      // 每个分类选前 4 个
+      Object.keys(words).forEach(cat => {
+        previewWords.push(...words[cat].slice(0, 4).map(w => ({word: w, category: cat})));
+      });
+      
+      container.innerHTML = previewWords.map(({word, category}, index) => `
+        <div class="preview-item">
+          <canvas width="150" height="150" id="word-${word}"></canvas>
+          <p>${word}</p>
+        </div>
+      `).join('');
+      
+      // 绘制
+      setTimeout(() => {
+        previewWords.forEach(({word, category}) => {
+          const wordCanvas = document.getElementById(`word-${word}`);
+          const wordCtx = wordCanvas.getContext('2d');
+          drawWordImage(word, category);
+          const img = new Image();
+          img.onload = () => {
+            wordCtx.drawImage(img, 0, 0, 150, 150);
+          };
+          img.src = canvas.toDataURL('image/png');
+        });
+      }, 100);
+    }
+    
+    // ========== 初始化 ==========
+    
+    window.addEventListener('load', function() {
+      log('🎨 页面加载完成');
+      log('✅ 所有图片将在浏览器中离线生成');
+      renderAnimalShowcase();
+      renderWordPreview();
+      log('✅ 预览已生成');
+      log('💡 点击下载按钮保存 PNG 图片');
+      log('💡 保存后放入 images/ 文件夹即可使用');
+    });
+  </script>
+</body>
+</html>

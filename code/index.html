@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单词小动物园 - 每日 5 词</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 头部：动物显示 -->
+    <header class="header">
+      <div class="animal-container">
+        <img id="animal-image" src="images/egg.png" alt="小动物" class="animal-image">
+        <div class="animal-info">
+          <span id="animal-level">等级：蛋</span>
+          <span id="days-count">连续学习：0 天</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main id="main-content">
+      <!-- 学习页面 -->
+      <div id="learning-page" class="page">
+        <div class="word-card">
+          <div class="word-image-container">
+            <img id="word-image" src="" alt="单词图片" class="word-image">
+          </div>
+          <h1 id="word-text" class="word-text">cat</h1>
+          <p id="word-meaning" class="word-meaning">猫</p>
+          <p id="word-sentence" class="word-sentence">This is a cat.</p>
+          
+          <div class="button-group">
+            <button id="btn-play" class="btn btn-primary">
+              🔊 听发音
+            </button>
+            <button id="btn-record" class="btn btn-secondary">
+              🎤 跟读
+            </button>
+          </div>
+          
+          <div class="nav-buttons">
+            <button id="btn-prev" class="btn btn-secondary">
+              ← 上一个
+            </button>
+            <button id="btn-next" class="btn btn-success">
+              下一个 →
+            </button>
+          </div>
+        </div>
+        
+        <!-- 进度指示器 -->
+        <div class="progress-container">
+          <span>今日进度：</span>
+          <div class="progress-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <span id="progress-text">1/5</span>
+        </div>
+      </div>
+
+      <!-- 完成页面 -->
+      <div id="complete-page" class="page hidden">
+        <div class="celebration-card">
+          <h1 class="celebration-title">🎉 太棒了！</h1>
+          <div class="level-up-animation">
+            <p class="level-up-text">小动物长大了！</p>
+            <div class="level-up-arrow">🐣 → 🐤</div>
+          </div>
+          <button id="btn-tomorrow" class="btn btn-success btn-large">
+            明天继续
+          </button>
+        </div>
+      </div>
+
+      <!-- 已完成页面 -->
+      <div id="completed-page" class="page hidden">
+        <div class="completed-card">
+          <h1 class="completed-title">✅ 今天已完成</h1>
+          <p class="completed-text">明天再来哦～</p>
+          <div class="completed-buttons">
+            <button id="btn-retry" class="btn btn-primary">
+              🔄 再来一次
+            </button>
+            <button id="btn-review" class="btn btn-secondary">
+              复习旧词
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 底部 -->
+    <footer class="footer">
+      <p>单词小动物园 - 每天进步一点点 🌱</p>
+    </footer>
+  </div>
+
+  <!-- 音频元素 -->
+  <audio id="audio-player"></audio>
+
+  <script src="data/words.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音频输出测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 100px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h1 { margin-bottom: 30px; }
+    .btn {
+      padding: 20px 40px;
+      font-size: 20px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 10px;
+      color: white;
+      font-weight: bold;
+    }
+    .btn-beep { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .btn-music { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .btn-speech { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .status {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      text-align: left;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔊 音频输出测试</h1>
+    <p>测试电脑是否能发出任何声音</p>
+    
+    <button class="btn btn-beep" onclick="testBeep()">
+      🔔 测试蜂鸣声
+    </button>
+    <br>
+    <button class="btn btn-music" onclick="testMusic()">
+      🎵 测试音乐
+    </button>
+    <br>
+    <button class="btn btn-speech" onclick="testSpeech()">
+      🗣 测试语音
+    </button>
+    
+    <div class="status" id="status">点击按钮测试...</div>
+  </div>
+
+  <script>
+    const statusDiv = document.getElementById('status');
+    
+    function log(msg) {
+      statusDiv.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      console.log(msg);
+    }
+    
+    // ========== 测试 1: 蜂鸣声 (Web Audio API) ==========
+    function testBeep() {
+      log('🔔 测试蜂鸣声...');
+      
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 440; // A4 音
+        gainNode.gain.value = 0.3;
+        
+        oscillator.start();
+        log('▶ 蜂鸣声开始');
+        
+        setTimeout(() => {
+          oscillator.stop();
+          log('✅ 蜂鸣声结束 - 如果听到了"嘟"声，说明音频输出正常！');
+          audioCtx.close();
+        }, 1000);
+        
+      } catch (e) {
+        log(`❌ 蜂鸣声失败：${e.message}`);
+      }
+    }
+    
+    // ========== 测试 2: 简单音乐 ==========
+    function testMusic() {
+      log('🎵 测试音乐...');
+      
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
+        let time = audioCtx.currentTime;
+        
+        notes.forEach((freq, i) => {
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          
+          oscillator.frequency.value = freq;
+          gainNode.gain.value = 0.2;
+          
+          oscillator.start(time + i * 0.3);
+          oscillator.stop(time + i * 0.3 + 0.25);
+        });
+        
+        log('▶ 音乐开始播放');
+        setTimeout(() => log('✅ 音乐结束 - 如果听到了旋律，说明音频正常！'), 1500);
+        
+      } catch (e) {
+        log(`❌ 音乐失败：${e.message}`);
+      }
+    }
+    
+    // ========== 测试 3: 语音 (再次尝试) ==========
+    function testSpeech() {
+      log('🗣 测试语音...');
+      
+      if (!('speechSynthesis' in window)) {
+        log('❌ 浏览器不支持语音合成');
+        return;
+      }
+      
+      const utterance = new SpeechSynthesisUtterance('Hello');
+      utterance.lang = 'en-US';
+      utterance.rate = 0.8;
+      
+      utterance.onstart = () => log('▶ 语音开始');
+      utterance.onend = () => log('✅ 语音结束');
+      utterance.onerror = (e) => log(`❌ 语音错误：${e.error}`);
+      
+      speechSynthesis.speak(utterance);
+      log('📢 已发送语音请求');
+    }
+    
+    // 页面加载
+    window.addEventListener('load', () => {
+      log('页面加载完成');
+      log('💡 依次点击三个按钮测试音频输出');
+      log('');
+      log('如果蜂鸣声和音乐能听到，但语音不行：');
+      log('→ 说明是 TTS 引擎问题，建议用本地 MP3 方案');
+      log('');
+      log('如果所有声音都听不到：');
+      log('→ 检查电脑音量、扬声器、音频驱动');
+    });
+  </script>
+</body>
+</html>

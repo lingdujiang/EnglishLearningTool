@@ -1,0 +1,6 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="200" rx="20" fill="#DDA0DD20"/>
+        <circle cx="100" cy="80" r="50" fill="#DDA0DD"/>
+        <text x="100" y="100" text-anchor="middle" fill="white" font-size="60" font-weight="bold" font-family="Arial">B</text>
+        <text x="100" y="160" text-anchor="middle" fill="#333" font-size="28" font-weight="bold" font-family="Arial">bird</text>
+      </svg>

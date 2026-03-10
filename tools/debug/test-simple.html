@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTS 发音测试 - 极简版</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 100px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    .word {
+      font-size: 72px;
+      color: #667eea;
+      margin: 30px 0;
+    }
+    .btn {
+      padding: 20px 40px;
+      font-size: 24px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin: 10px;
+    }
+    #status {
+      margin-top: 30px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔊 TTS 发音测试</h1>
+  <div class="word" id="word">cat</div>
+  
+  <button class="btn" onclick="speak()">🔊 播放</button>
+  <button class="btn" onclick="next()">⏭ 下一个</button>
+  
+  <div id="status">点击按钮开始测试...</div>
+
+  <script>
+    const words = ['cat', 'dog', 'bird', 'fish', 'rabbit', 'duck'];
+    let index = 0;
+    let synth = window.speechSynthesis;
+    let voices = [];
+    
+    const statusDiv = document.getElementById('status');
+    const wordDiv = document.getElementById('word');
+    
+    function log(msg) {
+      statusDiv.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      console.log(msg);
+    }
+    
+    // 页面加载时预加载语音
+    window.addEventListener('load', function() {
+      log('页面加载完成，正在加载语音...');
+      
+      // Chrome 需要等待 voiceschanged 事件
+      if (synth.onvoiceschanged !== undefined) {
+        synth.onvoiceschanged = function() {
+          voices = synth.getVoices();
+          log(`✅ 加载到 ${voices.length} 个语音`);
+          voices.forEach((v, i) => {
+            if (i < 5) console.log(`  ${i+1}. ${v.name} - ${v.lang}`);
+          });
+        };
+      }
+      
+      // 延迟获取语音
+      setTimeout(() => {
+        voices = synth.getVoices();
+        if (voices.length > 0) {
+          log(`✅ 检测到 ${voices.length} 个可用语音`);
+        } else {
+          log('⚠ 语音列表为空，继续尝试...');
+        }
+      }, 500);
+    });
+    
+    function speak() {
+      const word = words[index];
+      wordDiv.textContent = word;
+      log(`准备播放：${word}`);
+      
+      if (!synth) {
+        log('❌ 浏览器不支持 TTS');
+        alert('浏览器不支持 TTS');
+        return;
+      }
+      
+      // 创建发音实例
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.7;
+      utterance.volume = 1.0;
+      
+      // 选择英语语音
+      voices = synth.getVoices();
+      for (let voice of voices) {
+        if (voice.lang === 'en-US' || voice.lang === 'en-GB') {
+          utterance.voice = voice;
+          log(`使用语音：${voice.name}`);
+          break;
+        }
+      }
+      
+      // 事件监听
+      utterance.onstart = () => log('▶ 开始发音');
+      utterance.onend = () => log('✅ 发音完成');
+      utterance.onerror = (e) => log(`❌ 错误：${e.error}`);
+      
+      // 播放
+      synth.speak(utterance);
+      log('已发送播放请求');
+    }
+    
+    function next() {
+      index = (index + 1) % words.length;
+      wordDiv.textContent = words[index];
+      log(`下一个单词：${words[index]}`);
+    }
+    
+    // 键盘空格键播放
+    document.addEventListener('keydown', function(e) {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        speak();
+      }
+    });
+  </script>
+</body>
+</html>

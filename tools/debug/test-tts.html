@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTS 发音测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .test-word {
+      font-size: 48px;
+      text-align: center;
+      color: #667eea;
+      margin: 30px 0;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: bold;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    #log {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 14px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .log-item {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #667eea;
+      padding-left: 10px;
+    }
+    .log-error {
+      border-left-color: #ff4444;
+      color: #ff4444;
+    }
+    .log-success {
+      border-left-color: #00C851;
+      color: #00C851;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔊 TTS 发音测试</h1>
+    
+    <div class="test-word" id="current-word">cat</div>
+    
+    <button class="btn" onclick="playCurrentWord()">
+      🔊 播放当前单词
+    </button>
+    
+    <button class="btn btn-secondary" onclick="nextWord()">
+      ⏭ 下一个单词
+    </button>
+    
+    <button class="btn btn-secondary" onclick="checkVoices()">
+      📋 查看可用语音
+    </button>
+    
+    <div id="log"></div>
+  </div>
+
+  <script>
+    const words = ['cat', 'dog', 'bird', 'fish', 'rabbit'];
+    let wordIndex = 0;
+    
+    // 日志函数
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const item = document.createElement('div');
+      item.className = 'log-item ' + (type === 'error' ? 'log-error' : type === 'success' ? 'log-success' : '');
+      item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(item);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+    
+    // 初始化
+    window.addEventListener('DOMContentLoaded', function() {
+      log('🎉 页面加载完成');
+      log('📢 检查 TTS 支持...');
+      
+      if ('speechSynthesis' in window) {
+        log('✅ 浏览器支持 TTS', 'success');
+        
+        // 预加载语音
+        speechSynthesis.getVoices();
+        setTimeout(() => {
+          const voices = speechSynthesis.getVoices();
+          log(`📋 检测到 ${voices.length} 个可用语音`, 'success');
+        }, 100);
+      } else {
+        log('❌ 浏览器不支持 TTS', 'error');
+      }
+    });
+    
+    // 播放当前单词
+    function playCurrentWord() {
+      const word = words[wordIndex];
+      document.getElementById('current-word').textContent = word;
+      log(`🔊 准备播放：${word}`);
+      
+      if (!('speechSynthesis' in window)) {
+        log('❌ 浏览器不支持 TTS', 'error');
+        alert('您的浏览器不支持语音播放，请使用 Chrome 或 Edge 浏览器');
+        return;
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.7;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // 尝试选择更好的语音
+      const voices = speechSynthesis.getVoices();
+      for (let voice of voices) {
+        if (voice.lang === 'en-US' || voice.lang.startsWith('en')) {
+          utterance.voice = voice;
+          log(`🎤 使用语音：${voice.name} (${voice.lang})`);
+          break;
+        }
+      }
+      
+      utterance.onstart = function() {
+        log(`▶ 开始发音：${word}`, 'success');
+      };
+      
+      utterance.onend = function() {
+        log(`⏹ 发音完成：${word}`, 'success');
+      };
+      
+      utterance.onerror = function(event) {
+        log(`❌ 发音错误：${event.error}`, 'error');
+      };
+      
+      // 不 cancel，直接播放（避免 interrupted 错误）
+      speechSynthesis.speak(utterance);
+      log('📢 已发送发音请求');
+    }
+    
+    // 下一个单词
+    function nextWord() {
+      wordIndex = (wordIndex + 1) % words.length;
+      document.getElementById('current-word').textContent = words[wordIndex];
+      log(`⏭ 切换到单词：${words[wordIndex]}`);
+    }
+    
+    // 查看可用语音
+    function checkVoices() {
+      const voices = speechSynthesis.getVoices();
+      log(`📋 可用语音列表 (${voices.length}个):`, 'success');
+      voices.forEach((voice, index) => {
+        log(`  ${index + 1}. ${voice.name} - ${voice.lang} (${voice.default ? '默认' : ''})`);
+      });
+      
+      if (voices.length === 0) {
+        log('⚠ 语音列表为空，可能是浏览器限制', 'error');
+        log('💡 尝试：1.刷新页面 2.更换 Chrome/Edge 浏览器 3.检查系统语音设置');
+      }
+    }
+  </script>
+</body>
+</html>

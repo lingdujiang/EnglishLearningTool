@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTS 解锁测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 100px auto;
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .card {
+      background: white;
+      color: #333;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .word {
+      font-size: 96px;
+      margin: 40px 0;
+      color: #667eea;
+      font-weight: bold;
+    }
+    .btn {
+      padding: 20px 50px;
+      font-size: 24px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin: 10px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .status {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      font-size: 16px;
+      text-align: left;
+    }
+    .log-item {
+      margin: 8px 0;
+      padding: 8px;
+      background: white;
+      border-radius: 5px;
+      border-left: 4px solid #667eea;
+      padding-left: 12px;
+    }
+    .success { border-left-color: #28a745; color: #28a745; }
+    .error { border-left-color: #dc3545; color: #dc3545; }
+    .warning { border-left-color: #ffc107; color: #856404; }
+    
+    /* 解锁提示样式 */
+    #unlock-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #unlock-overlay.hidden {
+      display: none;
+    }
+    .unlock-content {
+      background: white;
+      color: #333;
+      padding: 50px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 500px;
+    }
+    .unlock-content h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .unlock-content p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      color: #666;
+    }
+    .unlock-btn {
+      padding: 20px 60px;
+      font-size: 22px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+      font-weight: bold;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body>
+  <!-- 解锁遮罩层 -->
+  <div id="unlock-overlay">
+    <div class="unlock-content">
+      <h2>🔊 需要您的交互</h2>
+      <p>浏览器要求用户先与页面交互才能播放声音</p>
+      <p style="font-size: 16px; color: #999;">点击下方按钮解锁音频功能</p>
+      <button class="unlock-btn" onclick="unlockAudio()">🔓 点击解锁</button>
+    </div>
+  </div>
+
+  <!-- 主界面 -->
+  <div class="card">
+    <h1>🎉 TTS 已解锁！</h1>
+    <p>现在可以测试发音了</p>
+    
+    <div class="word" id="word">cat</div>
+    
+    <button class="btn" id="play-btn" onclick="play()" disabled>
+      🔊 播放发音
+    </button>
+    
+    <button class="btn" onclick="nextWord()">
+      ⏭ 下一个单词
+    </button>
+    
+    <div class="status" id="status">
+      <div class="log-item">等待解锁...</div>
+    </div>
+  </div>
+
+  <script>
+    const words = ['cat', 'dog', 'bird', 'fish', 'rabbit'];
+    let wordIndex = 0;
+    let isUnlocked = false;
+    let synth = window.speechSynthesis;
+    
+    const statusDiv = document.getElementById('status');
+    const wordDiv = document.getElementById('word');
+    const playBtn = document.getElementById('play-btn');
+    
+    function log(msg, type = 'info') {
+      const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '';
+      statusDiv.innerHTML += `<div class="log-item ${className}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      statusDiv.scrollTop = statusDiv.scrollHeight;
+      console.log(msg);
+    }
+    
+    // 解锁音频
+    function unlockAudio() {
+      log('🔓 用户点击解锁按钮');
+      
+      // 创建并播放一个静音音频，激活音频上下文
+      const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+      audio.volume = 0;
+      
+      audio.play().then(() => {
+        log('✅ 音频上下文已激活', 'success');
+        isUnlocked = true;
+        playBtn.disabled = false;
+        
+        document.getElementById('unlock-overlay').classList.add('hidden');
+        log('✅ 解锁遮罩已隐藏', 'success');
+        
+        // 立即测试发音
+        setTimeout(() => play(), 500);
+      }).catch(err => {
+        log('❌ 音频激活失败：' + err.message, 'error');
+      });
+      
+      // 同时测试 TTS
+      testTTS();
+    }
+    
+    // 测试 TTS
+    function testTTS() {
+      if (!isUnlocked) {
+        log('⚠ 音频未解锁', 'warning');
+        return;
+      }
+      
+      const word = words[wordIndex];
+      wordDiv.textContent = word;
+      log(`🔊 准备播放：${word}`);
+      
+      const voices = synth.getVoices();
+      log(`📋 可用语音：${voices.length}个`);
+      
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.7;
+      utterance.volume = 1.0;
+      
+      // 选择英语语音
+      for (let voice of voices) {
+        if (voice.lang === 'en-US' || voice.lang === 'en-GB') {
+          utterance.voice = voice;
+          log(`🎤 使用：${voice.name}`, 'success');
+          break;
+        }
+      }
+      
+      // 关键：使用 addEventListener
+      utterance.addEventListener('start', () => {
+        log('▶ 开始发音', 'success');
+        statusDiv.innerHTML += '<div class="log-item success">🔊 正在播放声音...</div>';
+      });
+      
+      utterance.addEventListener('end', () => {
+        log('✅ 发音完成', 'success');
+      });
+      
+      utterance.addEventListener('error', (e) => {
+        log(`❌ 错误：${e.error}`, 'error');
+      });
+      
+      // 延迟执行，确保音频上下文已激活
+      setTimeout(() => {
+        synth.speak(utterance);
+        log('📢 已发送发音请求');
+      }, 200);
+    }
+    
+    function play() {
+      testTTS();
+    }
+    
+    function nextWord() {
+      wordIndex = (wordIndex + 1) % words.length;
+      wordDiv.textContent = words[wordIndex];
+      log(`⏭ 下一个：${words[wordIndex]}`);
+    }
+    
+    // 页面加载时预加载语音
+    window.addEventListener('load', function() {
+      log('📋 页面加载完成');
+      synth.getVoices();
+      
+      // Chrome 需要等待 voiceschanged
+      if (synth.onvoiceschanged !== undefined) {
+        synth.onvoiceschanged = function() {
+          const voices = synth.getVoices();
+          log(`📋 语音列表更新：${voices.length}个`);
+        };
+      }
+      
+      // 3 秒后自动获取一次
+      setTimeout(() => {
+        const voices = synth.getVoices();
+        log(`📋 当前语音数量：${voices.length}个`);
+      }, 3000);
+    });
+    
+    // 空格键播放
+    document.addEventListener('keydown', function(e) {
+      if (e.code === 'Space' && isUnlocked) {
+        e.preventDefault();
+        play();
+      }
+    });
+  </script>
+</body>
+</html>

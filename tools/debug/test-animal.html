@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>动物等级图测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 50px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { color: #667eea; text-align: center; }
+    
+    .animal-showcase {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 30px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 20px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .animal-item {
+      text-align: center;
+      background: rgba(255,255,255,0.2);
+      padding: 20px;
+      border-radius: 15px;
+    }
+    .animal-item img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+      background: white;
+      border-radius: 10px;
+    }
+    .animal-item p {
+      color: white;
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 18px;
+    }
+    .arrow {
+      font-size: 36px;
+      color: white;
+      opacity: 0.8;
+    }
+    
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 15px;
+    }
+    .test-item {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+    }
+    .test-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      margin-right: 20px;
+    }
+    .status {
+      font-weight: bold;
+    }
+    .success { color: #28a745; }
+    .error { color: #dc3545; }
+    
+    .btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 10px;
+      color: white;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .btn:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🐣 动物等级图测试</h1>
+    
+    <div style="text-align: center; margin: 20px 0;">
+      <button class="btn" onclick="forceReload()">🔄 强制刷新图片</button>
+      <button class="btn" onclick="checkAllImages()">🔍 检查所有图片</button>
+    </div>
+    
+    <div class="animal-showcase">
+      <div class="animal-item">
+        <img id="test-egg" src="images/egg.png" alt="蛋">
+        <p>蛋</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="animal-item">
+        <img id="test-chick" src="images/chick.png" alt="雏鸟">
+        <p>雏鸟</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="animal-item">
+        <img id="test-bird" src="images/bird.png" alt="小鸟">
+        <p>小鸟</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="animal-item">
+        <img id="test-bigbird" src="images/bigbird.png" alt="大鸟">
+        <p>大鸟</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="animal-item">
+        <img id="test-phoenix" src="images/phoenix.png" alt="凤凰">
+        <p>凤凰</p>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>📋 图片加载测试结果</h2>
+      <div id="test-results"></div>
+    </div>
+  </div>
+
+  <script>
+    const animals = [
+      { id: 'egg', name: '蛋' },
+      { id: 'chick', name: '雏鸟' },
+      { id: 'bird', name: '小鸟' },
+      { id: 'bigbird', name: '大鸟' },
+      { id: 'phoenix', name: '凤凰' }
+    ];
+    
+    function testImage(animal) {
+      return new Promise((resolve) => {
+        const img = document.getElementById(`test-${animal.id}`);
+        const resultDiv = document.getElementById('test-results');
+        
+        // 添加时间戳避免缓存
+        const timestamp = Date.now();
+        img.src = `images/${animal.id}.png?t=${timestamp}`;
+        
+        img.onload = () => {
+          resolve({ id: animal.id, name: animal.name, success: true, error: null });
+        };
+        
+        img.onerror = () => {
+          resolve({ id: animal.id, name: animal.name, success: false, error: '加载失败' });
+        };
+      });
+    }
+    
+    async function checkAllImages() {
+      const resultDiv = document.getElementById('test-results');
+      resultDiv.innerHTML = '<p>正在检查...</p>';
+      
+      const results = [];
+      for (const animal of animals) {
+        const result = await testImage(animal);
+        results.push(result);
+      }
+      
+      resultDiv.innerHTML = results.map(r => `
+        <div class="test-item">
+          <img src="images/${r.id}.png" alt="${r.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><rect fill=%22%23ccc%22 width=%2280%22 height=%2280%22/><text x=%2240%22 y=%2245%22 text-anchor=%22middle%22 fill=%22%23666%22>❌</text></svg>'">
+          <div>
+            <strong>${r.name} (${r.id}.png)</strong>
+            <div class="status ${r.success ? 'success' : 'error'}">
+              ${r.success ? '✅ 加载成功' : '❌ ' + r.error}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function forceReload() {
+      // 清除缓存并重新加载所有图片
+      const timestamp = Date.now();
+      animals.forEach(animal => {
+        const img = document.getElementById(`test-${animal.id}`);
+        img.src = `images/${animal.id}.png?t=${timestamp}`;
+      });
+      alert('已强制刷新所有图片！');
+    }
+    
+    // 页面加载时自动测试
+    window.addEventListener('load', function() {
+      setTimeout(checkAllImages, 500);
+    });
+  </script>
+</body>
+</html>
