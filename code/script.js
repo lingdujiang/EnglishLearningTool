@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => speechSynthesis.getVoices(), 100);
   }
   
+  // 加载保存的布局
+  loadLayout();
+  
   initApp();
   setupEventListeners();
   
@@ -344,7 +347,7 @@ function updateAnimalDisplay() {
   const totalWords = parseInt(localStorage.getItem('totalWords')) || 0;
   const level = getAnimalLevel(totalDays);
   
-  const animalImages = ['images/egg.png', 'images/chick.png', 'images/bird.png', 'images/bigbird.png', 'images/phoenix.png'];
+  const animalImages = ['images/egg_0.png', 'images/egg_1.png', 'images/egg_2.png', 'images/egg_3.png', 'images/egg_4.png'];
   const animalNames = ['蛋', '雏鸟', '小鸟', '大鸟', '凤凰'];
   
   document.getElementById('animal-image').src = animalImages[level];
@@ -401,6 +404,37 @@ function setupEventListeners() {
   // 复习旧词按钮
   document.getElementById('btn-review').addEventListener('click', function() {
     alert('复习功能开发中... 敬请期待！');
+  });
+  
+  // 重置进度按钮
+  document.getElementById('btn-reset').addEventListener('click', function() {
+    if (confirm('⚠️ 确定要重置学习进度吗？\n\n这将清除：\n- 连续学习天数\n- 今日学习进度\n- 总学习单词数\n\n此操作不可恢复！')) {
+      resetProgress();
+    }
+  });
+  
+  // 设置按钮 - 打开设置面板
+  document.getElementById('btn-settings').addEventListener('click', function() {
+    document.getElementById('settings-panel').classList.remove('hidden');
+  });
+  
+  // 关闭设置面板
+  document.getElementById('btn-close-settings').addEventListener('click', function() {
+    document.getElementById('settings-panel').classList.add('hidden');
+  });
+  
+  // 点击面板外部关闭
+  document.getElementById('settings-panel').addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.add('hidden');
+    }
+  });
+  
+  // 布局选项切换
+  document.querySelectorAll('input[name="layout"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      setLayout(this.value);
+    });
   });
 }
 
@@ -483,7 +517,37 @@ document.addEventListener('keydown', function(e) {
 // 在控制台输入 resetProgress() 可以重置进度
 window.resetProgress = function() {
   localStorage.clear();
+  alert('✅ 学习进度已重置！\n\n小动物回到了蛋的状态，重新开始学习吧！🥚');
   location.reload();
 };
+
+// ==================== 布局设置 ====================
+// 加载保存的布局
+function loadLayout() {
+  const savedLayout = localStorage.getItem('layout') || 'layout-a';
+  setLayout(savedLayout, true);
+}
+
+// 设置布局
+function setLayout(layoutName, isInit = false) {
+  // 移除所有布局类
+  document.body.classList.remove('layout-a', 'layout-b', 'layout-c');
+  
+  // 添加选中的布局类
+  document.body.classList.add(layoutName);
+  
+  // 更新单选按钮状态
+  const radio = document.querySelector(`input[name="layout"][value="${layoutName}"]`);
+  if (radio) {
+    radio.checked = true;
+  }
+  
+  // 保存布局设置
+  localStorage.setItem('layout', layoutName);
+  
+  if (!isInit) {
+    console.log('布局已切换:', layoutName);
+  }
+}
 
 console.log('单词小动物园已启动！输入 resetProgress() 可重置学习进度');

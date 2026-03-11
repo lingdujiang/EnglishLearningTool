@@ -8,16 +8,58 @@
 </head>
 <body>
   <div class="container">
-    <!-- 头部：动物显示 -->
+    <!-- 头部：动物显示 + 设置按钮 -->
     <header class="header">
       <div class="animal-container">
-        <img id="animal-image" src="images/egg.png" alt="小动物" class="animal-image">
+        <img id="animal-image" src="images/egg_0.png" alt="小动物" class="animal-image">
         <div class="animal-info">
           <span id="animal-level">等级：蛋</span>
           <span id="days-count">连续学习：0 天</span>
         </div>
       </div>
+      <button id="btn-settings" class="btn-settings" title="设置布局">
+        ⚙️
+      </button>
     </header>
+
+    <!-- 设置面板 -->
+    <div id="settings-panel" class="settings-panel hidden">
+      <div class="settings-content">
+        <div class="settings-header">
+          <h3>🎨 布局设置</h3>
+          <button id="btn-close-settings" class="btn-close">×</button>
+        </div>
+        <div class="settings-body">
+          <p class="settings-desc">选择你喜欢的布局样式：</p>
+          <div class="layout-options">
+            <label class="layout-option">
+              <input type="radio" name="layout" value="layout-a" checked>
+              <div class="layout-preview layout-preview-a">
+                <div class="preview-icon">📱</div>
+                <strong>紧凑布局</strong>
+                <span>方案 A</span>
+              </div>
+            </label>
+            <label class="layout-option">
+              <input type="radio" name="layout" value="layout-b">
+              <div class="layout-preview layout-preview-b">
+                <div class="preview-icon">📖</div>
+                <strong>左右分栏</strong>
+                <span>方案 B</span>
+              </div>
+            </label>
+            <label class="layout-option">
+              <input type="radio" name="layout" value="layout-c">
+              <div class="layout-preview layout-preview-c">
+                <div class="preview-icon">🎴</div>
+                <strong>卡片悬浮</strong>
+                <span>方案 C</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 主内容区 -->
     <main id="main-content">
@@ -27,40 +69,40 @@
           <div class="word-image-container">
             <img id="word-image" src="" alt="单词图片" class="word-image">
           </div>
-          <h1 id="word-text" class="word-text">cat</h1>
-          <p id="word-meaning" class="word-meaning">猫</p>
-          <p id="word-sentence" class="word-sentence">This is a cat.</p>
-          
-          <div class="button-group">
-            <button id="btn-play" class="btn btn-primary">
-              🔊 听发音
-            </button>
-            <button id="btn-record" class="btn btn-secondary">
-              🎤 跟读
-            </button>
+          <div class="word-content">
+            <h1 id="word-text" class="word-text">cat</h1>
+            <p id="word-meaning" class="word-meaning">猫</p>
+            <p id="word-sentence" class="word-sentence">This is a cat.</p>
+            
+            <div class="button-group">
+              <button id="btn-play" class="btn btn-primary">
+                🔊 听发音
+              </button>
+              <button id="btn-record" class="btn btn-secondary">
+                🎤 跟读
+              </button>
+            </div>
+            
+            <div class="nav-buttons">
+              <button id="btn-prev" class="btn btn-secondary">
+                ← 上一个
+              </button>
+              <button id="btn-next" class="btn btn-success">
+                下一个 →
+              </button>
+            </div>
           </div>
-          
-          <div class="nav-buttons">
-            <button id="btn-prev" class="btn btn-secondary">
-              ← 上一个
-            </button>
-            <button id="btn-next" class="btn btn-success">
-              下一个 →
-            </button>
+          <div class="progress-container">
+            <span>今日进度：</span>
+            <div class="progress-dots">
+              <span class="dot active"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <span id="progress-text">1/5</span>
           </div>
-        </div>
-        
-        <!-- 进度指示器 -->
-        <div class="progress-container">
-          <span>今日进度：</span>
-          <div class="progress-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
-          <span id="progress-text">1/5</span>
         </div>
       </div>
 
@@ -98,6 +140,9 @@
     <!-- 底部 -->
     <footer class="footer">
       <p>单词小动物园 - 每天进步一点点 🌱</p>
+      <button id="btn-reset" class="btn-reset" title="重置学习进度">
+        🗑️ 重置进度
+      </button>
     </footer>
   </div>
 

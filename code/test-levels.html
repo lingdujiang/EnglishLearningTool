@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>动物等级图片测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
+
+    /* 测试区域 */
+    .test-section {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .test-section h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    /* 等级展示 */
+    .level-display {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .level-image {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+    }
+
+    .level-info {
+      color: white;
+      font-size: 18px;
+    }
+
+    .level-info h3 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .level-info p {
+      opacity: 0.9;
+    }
+
+    /* 等级选择器 */
+    .level-selector {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .level-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .level-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .level-btn.active {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      transform: scale(1.1);
+    }
+
+    /* 所有等级预览 */
+    .all-levels {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .level-card {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .level-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .level-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .level-card h4 {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .level-card p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* 调试信息 */
+    .debug-info {
+      background: #f0f0f0;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .debug-info pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    /* 按钮组 */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐣 动物等级图片测试</h1>
+
+    <!-- 实时测试区域 -->
+    <div class="test-section">
+      <h2>📌 实时测试</h2>
+      
+      <div class="level-selector">
+        <button class="level-btn active" data-level="0">等级 0 - 蛋</button>
+        <button class="level-btn" data-level="1">等级 1 - 雏鸟</button>
+        <button class="level-btn" data-level="2">等级 2 - 小鸟</button>
+        <button class="level-btn" data-level="3">等级 3 - 大鸟</button>
+        <button class="level-btn" data-level="4">等级 4 - 凤凰</button>
+      </div>
+
+      <div class="level-display">
+        <img id="current-image" src="images/egg_0.png" alt="动物等级" class="level-image">
+        <div class="level-info">
+          <h3 id="level-name">等级：蛋</h3>
+          <p id="level-days">连续学习：0 天</p>
+          <p id="image-path">图片：images/egg_0.png</p>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-primary" onclick="simulateDays(0)">0 天</button>
+        <button class="btn btn-primary" onclick="simulateDays(1)">1 天</button>
+        <button class="btn btn-primary" onclick="simulateDays(3)">3 天</button>
+        <button class="btn btn-primary" onclick="simulateDays(6)">6 天</button>
+        <button class="btn btn-primary" onclick="simulateDays(10)">10 天</button>
+      </div>
+
+      <div class="debug-info">
+        <strong>调试信息：</strong>
+        <pre id="debug-output">等待操作...</pre>
+      </div>
+    </div>
+
+    <!-- 所有等级预览 -->
+    <div class="test-section">
+      <h2>📋 所有等级预览</h2>
+      <div class="all-levels" id="all-levels-container">
+        <!-- 动态生成 -->
+      </div>
+    </div>
+
+    <!-- 图片加载测试 -->
+    <div class="test-section">
+      <h2>🔍 图片加载测试</h2>
+      <div id="image-test-results"></div>
+      <button class="btn btn-secondary" onclick="testImageLoading()" style="margin-top: 15px;">
+        测试图片加载
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 等级配置
+    const levelConfig = {
+      0: { name: '蛋', image: 'images/egg_0.png', minDays: 0 },
+      1: { name: '雏鸟', image: 'images/egg_1.png', minDays: 1 },
+      2: { name: '小鸟', image: 'images/egg_2.png', minDays: 3 },
+      3: { name: '大鸟', image: 'images/egg_3.png', minDays: 6 },
+      4: { name: '凤凰', image: 'images/egg_4.png', minDays: 10 }
+    };
+
+    // 图片加载错误处理
+    function handleImageError(img) {
+      img.onerror = function() {
+        this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect fill="%23ccc" width="120" height="120"/><text x="60" y="65" text-anchor="middle" fill="%23666" font-size="14">图片加载失败</text></svg>';
+        console.error('图片加载失败:', this.dataset.src || this.src);
+      };
+      img.dataset.src = img.src;
+    }
+
+    // 获取动物等级
+    function getAnimalLevel(days) {
+      if (days >= 10) return 4;
+      if (days >= 6) return 3;
+      if (days >= 3) return 2;
+      if (days >= 1) return 1;
+      return 0;
+    }
+
+    // 更新显示
+    function updateDisplay(level) {
+      const config = levelConfig[level];
+      const img = document.getElementById('current-image');
+      const levelName = document.getElementById('level-name');
+      const levelDays = document.getElementById('level-days');
+      const imagePath = document.getElementById('image-path');
+      const debugOutput = document.getElementById('debug-output');
+
+      img.src = config.image;
+      levelName.textContent = `等级：${config.name}`;
+      levelDays.textContent = `连续学习：${config.minDays}+ 天`;
+      imagePath.textContent = `图片：${config.image}`;
+
+      debugOutput.textContent = JSON.stringify({
+        level: level,
+        name: config.name,
+        image: config.image,
+        minDays: config.minDays,
+        timestamp: new Date().toLocaleString()
+      }, null, 2);
+
+      // 更新按钮状态
+      document.querySelectorAll('.level-btn').forEach((btn, index) => {
+        btn.classList.toggle('active', index === level);
+      });
+    }
+
+    // 模拟天数
+    function simulateDays(days) {
+      const level = getAnimalLevel(days);
+      updateDisplay(level);
+      document.getElementById('level-days').textContent = `连续学习：${days} 天`;
+    }
+
+    // 生成所有等级预览
+    function generateAllLevels() {
+      const container = document.getElementById('all-levels-container');
+      container.innerHTML = '';
+
+      for (let i = 0; i <= 4; i++) {
+        const config = levelConfig[i];
+        const card = document.createElement('div');
+        card.className = 'level-card';
+        card.innerHTML = `
+          <img src="${config.image}" alt="${config.name}" data-idx="${i}">
+          <h4>${config.name}</h4>
+          <p>${config.minDays}+ 天</p>
+          <p style="font-size:12px;color:#999">${config.image}</p>
+        `;
+        const img = card.querySelector('img');
+        handleImageError(img);
+        card.onclick = () => updateDisplay(i);
+        container.appendChild(card);
+      }
+    }
+
+    // 测试图片加载
+    function testImageLoading() {
+      const resultsDiv = document.getElementById('image-test-results');
+      resultsDiv.innerHTML = '<p>测试中...</p>';
+
+      const results = [];
+      let loaded = 0;
+      const total = 5;
+
+      for (let i = 0; i <= 4; i++) {
+        const config = levelConfig[i];
+        const img = new Image();
+        
+        img.onload = () => {
+          results.push({
+            level: i,
+            name: config.name,
+            image: config.image,
+            status: '✅ 成功',
+            size: `${img.naturalWidth}x${img.naturalHeight}`
+          });
+          loaded++;
+          if (loaded === total) displayResults();
+        };
+
+        img.onerror = () => {
+          results.push({
+            level: i,
+            name: config.name,
+            image: config.image,
+            status: '❌ 失败',
+            size: '-'
+          });
+          loaded++;
+          if (loaded === total) displayResults();
+        };
+
+        img.src = config.image;
+      }
+
+      function displayResults() {
+        results.sort((a, b) => a.level - b.level);
+        resultsDiv.innerHTML = `
+          <table style="width:100%;border-collapse:collapse">
+            <tr style="background:#f0f0f0">
+              <th style="padding:10px;text-align:left">等级</th>
+              <th style="padding:10px;text-align:left">名称</th>
+              <th style="padding:10px;text-align:left">图片</th>
+              <th style="padding:10px;text-align:left">状态</th>
+              <th style="padding:10px;text-align:left">尺寸</th>
+            </tr>
+            ${results.map(r => `
+              <tr style="border-bottom:1px solid #e0e0e0">
+                <td style="padding:10px">${r.level}</td>
+                <td style="padding:10px">${r.name}</td>
+                <td style="padding:10px;font-size:12px">${r.image}</td>
+                <td style="padding:10px">${r.status}</td>
+                <td style="padding:10px">${r.size}</td>
+              </tr>
+            `).join('')}
+          </table>
+        `;
+      }
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      generateAllLevels();
+      updateDisplay(0);
+
+      // 为当前图片添加错误处理
+      handleImageError(document.getElementById('current-image'));
+
+      // 绑定等级按钮事件
+      document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const level = parseInt(btn.dataset.level);
+          updateDisplay(level);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
